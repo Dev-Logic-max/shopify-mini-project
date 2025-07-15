@@ -1,6 +1,6 @@
 import { auth } from '../config/firebaseConfig';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, OAuthProvider, updateProfile } from 'firebase/auth';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 
 // Shopify API config
 const shopifyBaseUrl = `https://${process.env.SHOPIFY_STORE_DOMAIN}/admin/api/2023-07`;
@@ -27,11 +27,15 @@ const createShopifyCustomer = async (email: string, fullName: string) => {
     );
     return response.data.customer;
   } catch (error: unknown) {
-    if (error instanceof Error) {
+    if (error instanceof AxiosError) {
       console.error('Shopify customer creation failed:', {
         message: error.message,
-        response: (error as any).response?.data,
-        status: (error as any).response?.status,
+        response: error.response?.data,
+        status: error.response?.status,
+      });
+    } else if (error instanceof Error) {
+      console.error('Shopify customer creation failed:', {
+        message: error.message,
       });
     } else {
       console.error('Shopify customer creation failed:', { message: 'Unknown error' });
@@ -53,7 +57,7 @@ export const signInWithGoogle = async () => {
   const provider = new GoogleAuthProvider();
   const userCredential = await signInWithPopup(auth, provider);
   const { email, displayName } = userCredential.user;
-  const fullName = displayName || 'Unknown User'; // Default value if null/undefined
+  const fullName = displayName || 'Unknown User';
   await createShopifyCustomer(email as string, fullName);
   return userCredential.user;
 };
@@ -63,7 +67,7 @@ export const signInWithMicrosoft = async () => {
   const provider = new OAuthProvider('microsoft.com');
   const userCredential = await signInWithPopup(auth, provider);
   const { email, displayName } = userCredential.user;
-  const fullName = displayName || 'Unknown User'; // Default value if null/undefined
+  const fullName = displayName || 'Unknown User';
   await createShopifyCustomer(email as string, fullName);
   return userCredential.user;
 };
