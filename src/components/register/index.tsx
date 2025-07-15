@@ -12,10 +12,10 @@ const SignUp = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [terms, setTerms] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError] = useState<string | null>(null); // Explicitly type error
   const router = useRouter();
 
-  const handleEmailSignup = async (e) => {
+  const handleEmailSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!terms) {
       setError('Please agree to terms.');
@@ -24,8 +24,13 @@ const SignUp = () => {
     try {
       await signUpWithEmail(email, password, fullName);
       router.push('/dashboard');
-    } catch (error: any) {
-      setError(error.message);
+    } catch (err: unknown) {
+      // Narrow the type
+      if (err instanceof Error) {
+        setError(err.message || 'Login failed. Please try again.');
+      } else {
+        setError('An unexpected error occurred.');
+      }
     }
   };
 
@@ -33,8 +38,12 @@ const SignUp = () => {
     try {
       await signInWithGoogle();
       router.push('/dashboard');
-    } catch (error: any) {
-      setError(error.message);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message || 'Google login failed. Please try again.');
+      } else {
+        setError('An unexpected error occurred.');
+      }
     }
   };
 
@@ -42,8 +51,12 @@ const SignUp = () => {
     try {
       await signInWithMicrosoft();
       router.push('/dashboard');
-    } catch (error: any) {
-      setError(error.message);
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+        setError(err.message || 'Microsoft login failed. Please try again.');
+      } else {
+        setError('An unexpected error occurred.');
+      }
     }
   };
 
@@ -51,6 +64,7 @@ const SignUp = () => {
     <div className="min-h-screen flex flex-col md:flex-row items-center justify-center">
       {/* Left side - Form */}
       <div className="w-full md:w-1/2 flex flex-col justify-center items-center p-2">
+        {error && <p className="text-red-500 text-sm text-center">{error}</p>}
 
         {/* For small screens only */}
         <div className="w-full sm:max-w-sm sm:px-12 block md:hidden mb-4">
