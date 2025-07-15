@@ -1,7 +1,6 @@
 // app/payment/page.tsx
 import Image from "next/image";
 import {
-  LockClosedIcon,
   CreditCardIcon,
   UserCircleIcon,
 } from "@heroicons/react/24/outline";
