@@ -22,22 +22,26 @@ const SignUp = () => {
       return;
     }
     try {
-      // await signUpWithEmail(email, password, fullName);
-      const userCredential = await signUpWithEmail(email, password, fullName);
-      // Use userCredential if needed, e.g., log the user
-      console.log('User signed up:', userCredential);
-      // Call server-side route to create Shopify customer
+      await signUpWithEmail(email, password, fullName);
+      
       const response = await fetch('/api/create-shopify-customer', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, fullName }),
       });
       if (!response.ok) throw new Error('Failed to create Shopify customer');
+
+      const stripeResponse = await fetch('/api/create-stripe-customer', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, fullName }),
+      });
+      if (!stripeResponse.ok) throw new Error('Failed to create Stripe customer');
+
       router.push('/dashboard');
     } catch (err: unknown) {
-      // Narrow the type
       if (err instanceof Error) {
-        setError(err.message || 'Login failed. Please try again.');
+        setError(err.message || 'Signup failed. Please try again.');
       } else {
         setError('An unexpected error occurred.');
       }
@@ -50,16 +54,25 @@ const SignUp = () => {
       const userCredential = await signInWithGoogle();
       const { email, displayName } = userCredential;
       const fullName = displayName || 'Unknown User';
-      const response = await fetch('/api/create-shopify-customer', {
+
+      const shopifyResponse = await fetch('/api/create-shopify-customer', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, fullName }),
       });
-      if (!response.ok) throw new Error('Failed to create Shopify customer');
+      if (!shopifyResponse.ok) throw new Error('Failed to create Shopify customer');
+
+      const stripeResponse = await fetch('/api/create-stripe-customer', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, fullName }),
+      });
+      if (!stripeResponse.ok) throw new Error('Failed to create Stripe customer');
+
       router.push('/dashboard');
     } catch (err: unknown) {
       if (err instanceof Error) {
-        setError(err.message || 'Google login failed. Please try again.');
+        setError(err.message || 'Google Signup failed. Please try again.');
       } else {
         setError('An unexpected error occurred.');
       }
@@ -68,20 +81,28 @@ const SignUp = () => {
 
   const handleMicrosoftSignup = async () => {
     try {
-      // await signInWithMicrosoft();
       const userCredential = await signInWithMicrosoft();
       const { email, displayName } = userCredential;
       const fullName = displayName || 'Unknown User';
-      const response = await fetch('/api/create-shopify-customer', {
+
+      const shopifyResponse = await fetch('/api/create-shopify-customer', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, fullName }),
       });
-      if (!response.ok) throw new Error('Failed to create Shopify customer');
+      if (!shopifyResponse.ok) throw new Error('Failed to create Shopify customer');
+
+      const stripeResponse = await fetch('/api/create-stripe-customer', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, fullName }),
+      });
+      if (!stripeResponse.ok) throw new Error('Failed to create Stripe customer');
+
       router.push('/dashboard');
     } catch (err: unknown) {
       if (err instanceof Error) {
-        setError(err.message || 'Microsoft login failed. Please try again.');
+        setError(err.message || 'Microsoft Signup failed. Please try again.');
       } else {
         setError('An unexpected error occurred.');
       }

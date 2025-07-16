@@ -19,9 +19,23 @@ const LoginForm = () => {
     }
     try {
       await loginWithEmail(email, password);
+
+      const shopifyResponse = await fetch('/api/create-shopify-customer', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, fullName: 'Unknown User' }), // Fallback name
+      });
+      if (!shopifyResponse.ok) throw new Error('Failed to create or find Shopify customer');
+
+      const stripeResponse = await fetch('/api/create-stripe-customer', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, fullName: 'Unknown User' }), // Fallback name
+      });
+      if (!stripeResponse.ok) throw new Error('Failed to create or find Stripe customer');
+
       router.push('/dashboard');
     } catch (err: unknown) {
-      // Narrow the type
       if (err instanceof Error) {
         setError(err.message || 'Login failed. Please try again.');
       } else {
@@ -32,7 +46,25 @@ const LoginForm = () => {
 
   const handleGoogleLogin = async () => {
     try {
-      await signInWithGoogle();
+      // await signInWithGoogle();
+      const userCredential = await signInWithGoogle();
+      const { email, displayName } = userCredential;
+      const fullName = displayName || 'Unknown User';
+
+      const shopifyResponse = await fetch('/api/create-shopify-customer', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, fullName }),
+      });
+      if (!shopifyResponse.ok) throw new Error('Failed to create or find Shopify customer');
+
+      const stripeResponse = await fetch('/api/create-stripe-customer', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, fullName }),
+      });
+      if (!stripeResponse.ok) throw new Error('Failed to create or find Stripe customer');
+
       router.push('/dashboard');
     } catch (err: unknown) {
       if (err instanceof Error) {
@@ -45,7 +77,25 @@ const LoginForm = () => {
 
   const handleMicrosoftLogin = async () => {
     try {
-      await signInWithMicrosoft();
+      // await signInWithMicrosoft();
+
+      const userCredential = await signInWithMicrosoft();
+      const { email, displayName } = userCredential;
+      const fullName = displayName || 'Unknown User';
+      const shopifyResponse = await fetch('/api/create-shopify-customer', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, fullName }),
+      });
+      if (!shopifyResponse.ok) throw new Error('Failed to create or find Shopify customer');
+
+      const stripeResponse = await fetch('/api/create-stripe-customer', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, fullName }),
+      });
+      if (!stripeResponse.ok) throw new Error('Failed to create or find Stripe customer');
+
       router.push('/dashboard');
     } catch (err: unknown) {
       if (err instanceof Error) {
