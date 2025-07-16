@@ -22,7 +22,15 @@ const SignUp = () => {
       return;
     }
     try {
-      await signUpWithEmail(email, password, fullName);
+      // await signUpWithEmail(email, password, fullName);
+      const userCredential = await signUpWithEmail(email, password, fullName);
+      // Call server-side route to create Shopify customer
+      const response = await fetch('/api/create-shopify-customer', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, fullName }),
+      });
+      if (!response.ok) throw new Error('Failed to create Shopify customer');
       router.push('/dashboard');
     } catch (err: unknown) {
       // Narrow the type
@@ -36,7 +44,16 @@ const SignUp = () => {
 
   const handleGoogleSignup = async () => {
     try {
-      await signInWithGoogle();
+      // await signInWithGoogle();
+      const userCredential = await signInWithGoogle();
+      const { email, displayName } = userCredential;
+      const fullName = displayName || 'Unknown User';
+      const response = await fetch('/api/create-shopify-customer', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, fullName }),
+      });
+      if (!response.ok) throw new Error('Failed to create Shopify customer');
       router.push('/dashboard');
     } catch (err: unknown) {
       if (err instanceof Error) {
@@ -49,7 +66,16 @@ const SignUp = () => {
 
   const handleMicrosoftSignup = async () => {
     try {
-      await signInWithMicrosoft();
+      // await signInWithMicrosoft();
+      const userCredential = await signInWithMicrosoft();
+      const { email, displayName } = userCredential;
+      const fullName = displayName || 'Unknown User';
+      const response = await fetch('/api/create-shopify-customer', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, fullName }),
+      });
+      if (!response.ok) throw new Error('Failed to create Shopify customer');
       router.push('/dashboard');
     } catch (err: unknown) {
       if (err instanceof Error) {
