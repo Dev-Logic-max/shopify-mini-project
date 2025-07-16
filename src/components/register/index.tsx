@@ -24,6 +24,8 @@ const SignUp = () => {
     try {
       // await signUpWithEmail(email, password, fullName);
       const userCredential = await signUpWithEmail(email, password, fullName);
+      // Use userCredential if needed, e.g., log the user
+      console.log('User signed up:', userCredential);
       // Call server-side route to create Shopify customer
       const response = await fetch('/api/create-shopify-customer', {
         method: 'POST',
