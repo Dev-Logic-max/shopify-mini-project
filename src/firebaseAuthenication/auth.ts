@@ -3,7 +3,7 @@ import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithP
 import axios, { AxiosError } from 'axios';
 
 // Shopify API config
-const shopifyBaseUrl = `https://${process.env.SHOPIFY_STORE_DOMAIN}/admin/api/2023-07`;
+const shopifyBaseUrl = `https://${process.env.SHOPIFY_STORE_DOMAIN}/admin/api/2025-07`;
 const shopifyHeaders = {
   'Content-Type': 'application/json',
   'X-Shopify-Access-Token': process.env.SHOPIFY_ACCESS_TOKEN || '',
